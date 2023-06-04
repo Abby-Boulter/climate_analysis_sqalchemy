@@ -34,11 +34,11 @@ def home():
     #List all available api routes.
     return (
         f"Available Routes for HI Weather:<br/>"
-        f"-- Daily Precipitation for 2016-2017 Season: <a href=\"/api/v1.0/precipitation\">/api/v1.0/precipitation<a><br/>"
-        f"-- Weather Stations: <a href=\"/api/v1.0/stations\">/api/v1.0/stations<a><br/>"
-        f"-- Daily Temperature Observations for Station USC00519281 for 2016-2017 Season: <a href=\"/api/v1.0/tobs\">/api/v1.0/tobs<a><br/>"
-        f"-- Enter a start date between 2010-01-01 and 2017-08-23 to get the minimum, maximum, and average temperatures for all dates after the specified date: /api/v1.0/yyyy-mm-dd<br>"
-        f"-- Enter both a start and end date between 2010-01-01 and 2017-08-23 to get the minimum, maximum, and average temperatures for that date range: /api/v1.0/yyyy-mm-dd/yyyy-mm-dd<br>"
+        f"- Daily Precipitation for 2016-2017 Season: <a href=\"/api/v1.0/precipitation\">/api/v1.0/precipitation<a><br/>"
+        f"- Weather Stations: <a href=\"/api/v1.0/stations\">/api/v1.0/stations<a><br/>"
+        f"- Daily Temperature Observations for Station USC00519281 for 2016-2017 Season: <a href=\"/api/v1.0/tobs\">/api/v1.0/tobs<a><br/>"
+        f"- Enter a start date between 2010-01-01 and 2017-08-23 to get the minimum, maximum, and average temperatures for all dates after the specified date: /api/v1.0/yyyy-mm-dd<br>"
+        f"- Enter both a start and end date between 2010-01-01 and 2017-08-23 to get the minimum, maximum, and average temperatures for that date range: /api/v1.0/yyyy-mm-dd/yyyy-mm-dd<br>"
     )
 
 #Precipitation Route
