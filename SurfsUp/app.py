@@ -11,12 +11,12 @@ from flask import Flask, jsonify
 #################################################
 engine = create_engine("sqlite:///Resources/hawaii.sqlite")
 
-# reflect an existing database into a new model
+#Reflect an existing database into a new model
 Base = automap_base()
-# reflect the tables
+#Reflect the tables
 Base.prepare(autoload_with=engine)
 
-# Save reference to the table
+#Save reference to the table
 meas = Base.classes.measurement
 stat = Base.classes.station
 
@@ -26,7 +26,7 @@ stat = Base.classes.station
 app = Flask(__name__)
 
 #################################################
-# Flask Routes
+#Flask Routes
 #################################################
 
 @app.route("/")
@@ -41,20 +41,19 @@ def home():
         f"-- Enter both a start and end date between 2010-01-01 and 2017-08-23 to get the minimum, maximum, and average temperatures for that date range: /api/v1.0/yyyy-mm-dd/yyyy-mm-dd<br>"
     )
 
-
+#Precipitation Route
 @app.route("/api/v1.0/precipitation")
 def precipitation():
-    # Create our session (link) from Python to the DB
+    #Create our session (link) from Python to the DB
     session = Session(engine)
 
     #Return a list of all precipitation
-    # Convert the query results from your precipitation analysis
     last_yr_prcp  = session.query(meas.date, meas.prcp).filter(meas.date <= '2017-08-23').\
         filter(meas.date > '2016-08-23').order_by(meas.date).all()
 
     session.close()
 
-    # precipitation analysis to a dictionary using date as the key and prcp as the value.
+    #Convert precipitation analysis to a dictionary using date as the key and prcp as the value.
     precip_values = []
     for prcp, date in last_yr_prcp:
         precip_dict = {}
@@ -64,11 +63,12 @@ def precipitation():
 
     return jsonify(precip_values) 
  
+ #Station Route
 @app.route("/api/v1.0/stations")
 def station(): 
     session = Session(engine)
-
-    """Return a list of stations from the database""" 
+    
+    #Return a list of stations from the database
     active_stations = session.query(meas.station).\
         group_by(meas.station).all()
     session.close()
@@ -76,6 +76,7 @@ def station():
     stations_list = list(np.ravel(active_stations))
     return jsonify (stations_list)
 
+#Tobs Route
 @app.route("/api/v1.0/tobs")
 def tobs():
     session = Session(engine)
@@ -84,11 +85,12 @@ def tobs():
     active_station= session.query(meas.station, func.count(meas.station)).\
         order_by(func.count(meas.station).desc()).group_by(meas.station).first()
     
+    #most active station ID
     most_active_station = active_station[0] 
 
     session.close()
     
-        #only the most active station: 
+    #only the most active station: 
     print(most_active_station)
     
     tobs_most_active = session.query(meas.date, meas.tobs, meas.station).\
@@ -105,18 +107,18 @@ def tobs():
         
     return jsonify(tobs_values) 
 
-# Dynamic Route
+# Dynamic Route accepts the start date as a parameter from the URL 
 @app.route("/api/v1.0/<start_date>")
-# Accepts the start date as a parameter from the URL 
+
 def start_route(start_date):
-    # the minimum temperature, the average temperature, and the maximum temperature for a specified start or start-end range
+    #The minimum, average, maximum temperature for a specified start or start-end range
     session = Session(engine)
     
     query_result = session.query(func.min(meas.tobs), func.avg(meas.tobs), func.max(meas.tobs)).\
         filter(meas.date >= start_date).all()
     session.close()
 
-    # For a specified start, calculate TMIN, TAVG, and TMAX for all the dates greater than or equal to the start date.
+    #For a specified start, calculate minimum, average, maximum temperature for all the dates greater than or equal to the start date.
     start_stats = []
     for tmin, tavg, tmax in query_result:
         start_dict = {}
@@ -125,24 +127,24 @@ def start_route(start_date):
         start_dict["Max"] = tmax
         start_stats.append(start_dict)
 
-    # If the query returned non-null values return the results,
-    # otherwise return an error message
+    #If the query returned non-null values return the results, otherwise return an error message
     if start_dict['Min']: 
         return jsonify(start_stats)
     else:
         return jsonify({"error": f"Date {start_date} not found or not formatted as YYYY-MM-DD."}), 404
-  
+
+#Accepts the start & end date as a parameter from the URL  
 @app.route("/api/v1.0/<start_date>/<end_date>")
-# Accepts the start & end date as a parameter from the URL 
+
 def start_end_route(start_date, end_date):
     
-    # JSON list of the minimum temperature, the average temperature, and the maximum temperature for a specified start or start-end range
+    #JSON list of the minimum, average, maximum temperature for a specified start or start-end range
     session = Session(engine)
     query_result = session.query(func.min(meas.tobs), func.avg(meas.tobs), func.max(meas.tobs)).\
         filter(meas.date >= start_date).filter(meas.date <= end_date).all()
     session.close()
 
-    # calculate TMIN, TAVG, and TMAX for the dates from the start date to the end date, inclusive.
+    #Calculate the minimum, average, maximum temperature for the dates from the start date to the end date, inclusive.
     start_end_stats = []
     for Tmin, Tavg, Tmax in query_result:
         start_end_dict = {}
@@ -151,8 +153,7 @@ def start_end_route(start_date, end_date):
         start_end_dict["Max"] = Tmax
         start_end_stats.append(start_end_dict)
 
-    # If the query returned non-null values return the results,
-    # otherwise return an error message
+    #If the query returned non-null values return the results, otherwise return an error message
     if start_end_dict['Min']: 
         return jsonify(start_end_stats)
     else:
