@@ -1,4 +1,4 @@
-# sqalchemy_challenge
+# climate_analysis_sqalchemy
 
 ## Part 1: Analyze and Explore the Climate Data
 Precipitation and Station Analysis for Hawaii
